@@ -1,0 +1,14 @@
+﻿@using Marchandises.Services
+@using Marchandises.Models
+@inject IClientCrud clientCrud
+@page "/{Id:int?}"
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, world! @Id</h1>
+
+Welcome to your new app.
+@code{
+    [Parameter]
+    public int? Id { get; set; }
+ }

@@ -1,0 +1,39 @@
+﻿@using Marchandises.Services
+@using Marchandises.Models
+@inject IClientCrud clientCrud
+@page "/detailClient/{id:int}"
+
+
+<h3>Afficher les détails</h3>
+@if (@Cl == null)
+{
+    <p>Client inexistant</p>
+}
+else
+{
+    <dl>
+        <dt>Code Client:</dt>
+        <dd>@Cl.Id</dd>
+        <dt>Nom: </dt>
+        <dd>@Cl.Nom</dd>
+        <dt>Telephone :</dt>
+        <dd>@Cl.Telephone</dd>
+    </dl>
+}
+
+@code{
+    [Parameter]
+    public int id { get; set; }
+    //[SupplyParameterFromQuery]
+
+
+    public Client? Cl { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Cl = clientCrud.GetClient(id);
+    }
+}
+
+
+

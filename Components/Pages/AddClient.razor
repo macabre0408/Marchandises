@@ -1,0 +1,36 @@
+﻿@page "/insertClient"
+@using Marchandises.Services
+@using Marchandises.Models
+@inject IClientCrud clientCrud
+
+<h3>Ajouter un Client</h3>
+
+<EditForm Model="Cl" Method="Post" FormName="Ajout" OnValidSubmit="Insert">
+    <div>
+        <label>Nom :</label>
+        <InputText @bind-Value="Cl.Nom"></InputText>
+    </div>
+    <div>
+        <label>Telephone :</label>
+        <InputText @bind-Value="Cl.Telephone"></InputText>
+    </div>
+    <div>
+        <button type="submit">Insert</button>
+    </div>
+    
+   
+</EditForm>
+
+@code {
+    [SupplyParameterFromForm]
+    public Client Cl { get; set; } = new Client();
+
+    public async Task Insert()
+    {
+        await clientCrud.InsertClient(Cl);
+
+
+    }
+
+
+}

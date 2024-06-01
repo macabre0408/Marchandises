@@ -1,0 +1,72 @@
+@page "/product"
+@using Marchandises.Models
+@using Marchandises.Service
+@inject IProduitService productService
+
+<h3>Produits</h3>
+
+@if(products == null){
+    <p>Hello</p>
+}
+else{
+    <table class="table table-bordered border-primary">
+        <tr>
+            <th>Nom</th>
+            <th>Prix</th>
+        </tr>
+        @foreach (var pro in products)
+        {
+            <tr>
+                <td>@pro.Nom</td>
+                <td>@pro.Prix</td>
+            </tr>
+        }
+    </table>
+   
+}
+ <form>
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="inputGroup-sizing-default">Id</span>
+                <input type="text" class="form-control" aria-label="Sizing example input"
+                aria-describedby="inputGroup-sizing-default" @bind="P.Id" />
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="inputGroup-sizing-default">Nom</span>
+                <input type="text" class="form-control" aria-label="Sizing example input" 
+                aria-describedby="inputGroup-sizing-default" @bind="P.Nom" />
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="inputGroup-sizing-default">Prix</span>
+                <input type="text" class="form-control" aria-label="Sizing example input" 
+                aria-describedby="inputGroup-sizing-default" @bind="P.Prix" />
+            </div>
+            <div>
+                <button class="btn btn-danger" @onclick="InsertProd">Insert</button>
+        <button class="btn btn-danger" @onclick="find">find</button>
+            </div>
+    </form>
+@code{
+    private List<Products> products = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = await productService.GetProduitsAsync();
+    }
+    Products P = new Products();
+    private async Task InsertProd(){
+
+        await productService.AddProduitAsync(P);
+        products = await productService.GetProduitsAsync();
+        P = new Products();
+    } 
+    private async Task DeleteProd(){
+        await productService.DeleteProduitAsync(1);
+        products = await productService.GetProduitsAsync();
+    }
+    private async Task find()
+    {
+        P = await productService.GetProduitByIdAsync(1);
+    } 
+    }
+    
+

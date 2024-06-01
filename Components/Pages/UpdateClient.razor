@@ -1,0 +1,51 @@
+﻿@page "/updateClient/{id:int}"
+@using Marchandises.Models
+@using Marchandises.Services
+@inject IClientCrud clientCrud
+
+<h3>Modifier un client</h3>
+@if (Cl == null)
+{
+    <p>Le Client est inexistant</p>
+}
+else
+{
+    <EditForm Model="Cl" Method="Post" OnValidSubmit="Modifier" FormName="Editer">
+        <div>
+            <InputNumber @bind-Value="Cl.Id" hidden="hidden"></InputNumber>
+        </div>
+        <div>
+            <label>Nom: </label>
+            <InputText @bind-Value="Cl.Nom"></InputText>
+        </div>
+        <div>
+            <label>Téléphone: </label>
+            <InputText @bind-Value="Cl.Telephone"></InputText>
+        </div>
+        <div>
+            <button type="submit">Enrégistrer</button>
+        </div>
+    </EditForm>
+}
+
+
+@code {
+
+    [SupplyParameterFromForm] 
+    public Client? Cl { get; set; }
+    [Parameter]
+    public int id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Cl = await clientCrud.GetClient(id);
+    }
+
+    public async Task Modifier()
+    {
+        if(Cl != null)
+        {
+            await clientCrud.UpdateClient(Cl);
+        }
+    }
+}

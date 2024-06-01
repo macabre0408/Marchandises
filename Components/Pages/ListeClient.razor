@@ -1,0 +1,44 @@
+﻿@page "/client"
+@using Marchandises.Services
+@using Marchandises.Models
+@inject IClientCrud clientCrud
+
+<h3>Produits</h3>
+
+@if(clients == null){
+    <p>Loading ...</p>
+}
+else
+{
+    <table class="table table-bordered border-primary">
+        <tr>
+            <th>Nom</th>
+            <th>Telephone</th>
+        </tr>
+        @foreach (var cl in clients)
+        {
+            <tr>
+                <td>@cl.Nom</td>
+                <td>@cl.Telephone</td>
+                <td><a href="/updateClient/@cl.Id"><button>Modifier un client</button></a> </td>
+                <td><button>Delete</button></td>
+                <td><a href="/detailClient/@cl.Id"><button> Details</button></a>
+
+            </td>
+            </tr>
+        }
+    </table>
+
+}
+<a href="/insertClient"><button>Inserer</button></a>
+@code {
+    public List<Client>? clients;
+
+    protected override async Task OnInitializedAsync(){
+
+        clients = await clientCrud.ShowClient();
+    }
+
+
+
+}
