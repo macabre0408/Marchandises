@@ -9,9 +9,9 @@ namespace Marchandises.Services
 
         public Task<bool> InsertClient(Client cl);
 
-        public Task UpdateClient(Client cl);
+        public Task<bool> UpdateClient(Client cl);
 
-        public bool DeleteClient(int id);
+        public Task DeleteClient(int id);
 
         public Task<Client?> GetClient(int id);
     }

@@ -1,7 +1,11 @@
-﻿@page "/updateClient/{id:int}"
+﻿@page "/updateClient"
+@* @page "/updateClient/{id:int}" *@
 @using Marchandises.Models
 @using Marchandises.Services
 @inject IClientCrud clientCrud
+@inject NavigationManager Navigation
+@inject ILogger<Client> logger
+@rendermode InteractiveServer
 
 <h3>Modifier un client</h3>
 @if (Cl == null)
@@ -10,30 +14,38 @@
 }
 else
 {
-    <EditForm Model="Cl" Method="Post" OnValidSubmit="Modifier" FormName="Editer">
-        <div>
-            <InputNumber @bind-Value="Cl.Id" hidden="hidden"></InputNumber>
+    <EditForm Model="Cl" method="post" FormName="EditClient" OnValidSubmit="ModifierClient" Enhance>
+        <DataAnnotationsValidator />
+       <ValidationSummary/>
+
+        <div class="mb-3">
+            <input type="hidden" name="Cl.Id" class="form-control" value="@Cl.Id" />
         </div>
-        <div>
-            <label>Nom: </label>
-            <InputText @bind-Value="Cl.Nom"></InputText>
+        <div class="mb-3">
+            <label for="name" class="form-label">Nom :</label>
+            <InputText @bind-Value="Cl.Nom" class="form-control" id="name" placeholder="Kossigan"></InputText>
+            <ValidationMessage For="@(()=>Cl.Nom)" />
         </div>
-        <div>
-            <label>Téléphone: </label>
-            <InputText @bind-Value="Cl.Telephone"></InputText>
+        <div class="mb-3">
+            <label for="tel" class="form-label">Telephone :</label>
+            <InputText @bind-Value="Cl.Telephone" class="form-control" id="tel" placeholder="00000000"></InputText>
+            <ValidationMessage For="@(()=>Cl.Telephone)" />
         </div>
-        <div>
-            <button type="submit">Enrégistrer</button>
+        <div class="mb-3">
+           <button type="submit" class="btn-dark">Editer</button>
         </div>
+
+
     </EditForm>
 }
 
 
 @code {
 
-    [SupplyParameterFromForm] 
+    [SupplyParameterFromForm(FormName = "EditClient")]
     public Client? Cl { get; set; }
-    [Parameter]
+
+    [SupplyParameterFromQuery]
     public int id { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -41,11 +53,22 @@ else
         Cl = await clientCrud.GetClient(id);
     }
 
-    public async Task Modifier()
+    public void verifier()
     {
-        if(Cl != null)
+        logger.LogInformation("Fonctionne");   
+    }
+
+    public async Task ModifierClient()
+    {
+        logger.LogInformation($"Client {Cl?.Nom}");
+        bool result = await clientCrud.UpdateClient(Cl!);
+        if (result)
         {
-            await clientCrud.UpdateClient(Cl);
+            Navigation.NavigateTo("/client");
+        }
+        else
+        {
+            // Gérer les erreurs ici
         }
     }
 }

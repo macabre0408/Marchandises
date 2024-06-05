@@ -15,12 +15,28 @@ namespace Marchandises.Models
         [Key]
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage ="Le nom est requis")]
         [StringLength(100, ErrorMessage = "Nom trop long")]
         public string Nom {get;set;}
-        [Required]
+        [Required(ErrorMessage ="Le numéro de téléphone est requis")]
         public string Telephone {get;set;}
 
-        public Client(){}
+        public Client(){
+            Nom = "";
+            Telephone = "";
+        }
+
+        //public Client(string nom, string telephone)
+        //{
+        //    Nom = nom;
+        //    Telephone = telephone;
+        //}
+
+        //public Client(int id, string nom, string telephone)
+        //{
+        //    Id = id;
+        //    Nom = nom;
+        //    Telephone = telephone;
+        //}
     }
 }

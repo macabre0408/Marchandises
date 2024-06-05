@@ -1,8 +1,6 @@
 ﻿using Marchandises.Data;
 using Marchandises.Models;
-using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using Microsoft.EntityFrameworkCore;
-using SQLitePCL;
 
 
 namespace Marchandises.Services
@@ -17,48 +15,83 @@ namespace Marchandises.Services
         {
             _context = context;
         }
-        public bool DeleteClient(int id)
+        public async Task DeleteClient(int id)
         {
-            throw new NotImplementedException();
+            Client? cl = _context.Clients.Find(id);
+            if (cl != null)
+            {
+                _context.Clients.Remove(cl);
+                await _context.SaveChangesAsync();
+            }
         }
 
         public async Task<Client?> GetClient(int id)
         {
             return await _context.Clients.FindAsync(id);
-            
+
         }
 
-        async Task<bool> IClientCrud.InsertClient(Client cl)
+        public async Task<bool> InsertClient(Client cl)
         {
+            // Vérification que le nom et le téléphone ne sont pas null ou vides
             if (string.IsNullOrWhiteSpace(cl.Nom) || string.IsNullOrWhiteSpace(cl.Telephone))
             {
                 return false;
             }
-            else
+
+            // Vérification si un client avec le même nom et téléphone existe déjà
+            bool clientExists = await _context.Clients
+                                              .AnyAsync(c => c.Nom == cl.Nom && c.Telephone == cl.Telephone);
+
+            if (!clientExists)
             {
+                // Ajouter le nouveau client au contexte
                 _context.Clients.Add(cl);
                 try
                 {
+                    // Sauvegarder les changements dans la base de données
                     await _context.SaveChangesAsync();
+                    return true;
                 }
-                catch (Exception ex) { 
+                catch (Exception ex)
+                {
+                    // Enregistrer l'erreur (décommenter si un logger est disponible)
                     //_logger.LogError(ex.Message);
                     return false;
                 }
-                return true;
             }
+
+            return false; // Retourne false si le client existe déjà
         }
+
 
         async Task<List<Client>> IClientCrud.ShowClient()
         {
-               return await _context.Clients.ToListAsync();
+            return await _context.Clients.ToListAsync();
         }
 
-        public async Task UpdateClient(Client cl)
+        public async Task<bool> UpdateClient(Client client)
         {
-            _context.Entry(cl).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            var existingClient = await _context.Clients.FindAsync(client.Id);
+            if (existingClient == null)
+            {
+                return false;
+            }
 
+            existingClient.Nom = client.Nom;
+            existingClient.Telephone = client.Telephone;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log error (ex.Message)
+                return false;
+            }
         }
+
     }
 }

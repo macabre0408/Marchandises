@@ -2,27 +2,31 @@
 @using Marchandises.Services
 @using Marchandises.Models
 @inject IClientCrud clientCrud
+@rendermode InteractiveServer
 
-<h3>Produits</h3>
+<h3>Clients</h3>
 
 @if(clients == null){
     <p>Loading ...</p>
 }
 else
 {
-    <table class="table table-bordered border-primary">
+    <table class="table table-bordered">
         <tr>
             <th>Nom</th>
             <th>Telephone</th>
+            <th colspan="3">Actions</th>
         </tr>
         @foreach (var cl in clients)
         {
             <tr>
                 <td>@cl.Nom</td>
                 <td>@cl.Telephone</td>
-                <td><a href="/updateClient/@cl.Id"><button>Modifier un client</button></a> </td>
-                <td><button>Delete</button></td>
-                <td><a href="/detailClient/@cl.Id"><button> Details</button></a>
+                <td><a href=@($"/updateClient?id={cl.Id}")><button class="btn-warning"><i class="bi bi-pencil-square"></i></button></a> </td>
+                @* <td><a href="/updateClient/@cl.Id"><button class="btn-warning"><i class="bi bi-pencil-square"></i></button></a> </td> *@
+                <td><button class="btn-danger"><i class="bi bi-trash" @onclick="()=>Delete(cl.Id)"></i></button></td>
+                <td>
+                    <a href="/detailClient/@cl.Id"><button class="border-light"> <i class="bi bi-eye"></i></button></a>
 
             </td>
             </tr>
@@ -30,7 +34,7 @@ else
     </table>
 
 }
-<a href="/insertClient"><button>Inserer</button></a>
+<a href="/insertClient"><button class="btn-light">Inserer</button></a>
 @code {
     public List<Client>? clients;
 
@@ -38,7 +42,14 @@ else
 
         clients = await clientCrud.ShowClient();
     }
-
+    public async Task Delete(int id)
+    {
+        // bool estConfirme = await JSRuntime.InvokeAsync<bool>("ConfirmDelete", "Êtes-vous sûr de vouloir supprimer cet article ?");
+        // if (estConfirme)
+        // {
+             await  clientCrud.DeleteClient(id);
+        // }
+    }
 
 
 }

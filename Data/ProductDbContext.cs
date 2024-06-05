@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Marchandises.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Marchandises.Data
 {
-    public class ProductDbContext:DbContext
+    public class ProductDbContext:IdentityDbContext<Utilisateur>
     {
         public DbSet<Client> Clients { get; set; }
         public DbSet<Products> Produits { get; set;}
@@ -14,6 +15,7 @@ namespace Marchandises.Data
         //         entity.HasKey(e => e.Id);
         //         entity.ToTable("produit");}
         //     );
+        
         }
         
     

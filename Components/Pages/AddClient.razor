@@ -6,16 +6,21 @@
 <h3>Ajouter un Client</h3>
 
 <EditForm Model="Cl" Method="Post" FormName="Ajout" OnValidSubmit="Insert">
-    <div>
-        <label>Nom :</label>
-        <InputText @bind-Value="Cl.Nom"></InputText>
+    <DataAnnotationsValidator/>
+    @* <ValidationSummary/> *@
+
+    <div class="mb-3">
+        <label for="name" class="form-label">Nom :</label>
+        <InputText @bind-Value="Cl.Nom" class="form-control" id="name" placeholder="Kossigan"></InputText>
+        <ValidationMessage For="@(()=>Cl.Nom)"/>
     </div>
-    <div>
-        <label>Telephone :</label>
-        <InputText @bind-Value="Cl.Telephone"></InputText>
+    <div class="mb-3">
+        <label for="tel" class="form-label">Telephone :</label>
+        <InputText @bind-Value="Cl.Telephone" class="form-control" id="tel" placeholder="00000000"></InputText>
+        <ValidationMessage For="@(()=>Cl.Telephone)"/>
     </div>
-    <div>
-        <button type="submit">Insert</button>
+    <div class="mb-3">
+        <button type="submit" class="btn-dark">Insert</button>
     </div>
     
    
@@ -27,9 +32,11 @@
 
     public async Task Insert()
     {
-        await clientCrud.InsertClient(Cl);
-
-
+        bool ex=await clientCrud.InsertClient(Cl);
+        if (ex)
+        {
+            Cl = new Client();
+        }
     }
 
 
