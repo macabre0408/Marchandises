@@ -3,10 +3,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Marchandises.Models
 {
-    public class Utilisateur:IdentityUser
+    public class Utilisateur:IdentityUser<string>
     {
         [Required(ErrorMessage ="Le nom est obligatoire")]
-        public string Nom { get; set; }
+        public string? Nom { get; set; }
         public string? Genre { get; set; }
 
     }

@@ -7,12 +7,20 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Marchandises.Models;
+using Marchandises.Components.Account;
 
 internal class Program
 {
     private static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
+        builder.Services.AddCascadingAuthenticationState();
+        builder.Services.AddScoped<IdentityUserAccessor>();
+        builder.Services.AddScoped<IdentityRedirectManager>();
+        builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+
 
         // Configure the MySQL connection
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -23,17 +31,37 @@ internal class Program
         builder.Services.AddScoped<IProduitService, ProductService>();
         builder.Services.AddScoped<IClientCrud, ClientCrud>();
         // Ajouter les services d'authentification et d'autorisation
-        builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            .AddCookie();
+        //builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+        //    .AddCookie();
 
-        builder.Services.AddAuthorizationCore();
+        //builder.Services.AddAuthorizationCore();
+        builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultScheme = IdentityConstants.ApplicationScheme;
+            options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+        })
+            .AddIdentityCookies();
 
+        //builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+        builder.Services.AddIdentityCore<Utilisateur>(options => options.SignIn.RequireConfirmedAccount = true)
+            .AddEntityFrameworkStores<ProductDbContext>()
+            .AddSignInManager()
+            .AddDefaultTokenProviders()
+            ;
+
+        builder.Services.AddSingleton<IEmailSender<Utilisateur>, IdentityNoOpEmailSender>();
 
         // Add services to the container.
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
         builder.Services.AddRazorPages();
         builder.Services.AddServerSideBlazor();
+
+        //
+
+        //add Identity Services
+
 
         var app = builder.Build();
 
@@ -47,11 +75,11 @@ internal class Program
 
         app.UseStaticFiles();
         app.UseAntiforgery();
-        app.UseAuthentication();
-        app.UseAuthorization();
+       
 
         app.MapRazorComponents<App>()
             .AddInteractiveServerRenderMode();
+        app.MapAdditionalIdentityEndpoints();
 
         app.Run();
     }
